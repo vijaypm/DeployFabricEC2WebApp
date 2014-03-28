@@ -42,7 +42,7 @@ def update_noip(noip_user_pass, noip_user_email, noip_hostname):
     run('echo \'export NOIP_USERAGENT="curl/7.27.0 %s"\' >> .profile' % noip_user_email)
     run('echo "export NOIP_HOSTNAME=%s" >> .profile' % noip_hostname)
     run('echo "export NOIP_IP=%s" >> .profile' % env.instance_ip[env.host])
-    put('registerNoIP.sh', '', mode=0755)
+    put('deployables/registerNoIP.sh', 'registerNoIP.sh', mode=0755)
     run('./registerNoIP.sh')
 
     #run('curl --verbose --user %s --user-agent "curl/7.27.0 vijaypmreg+dns@gmail.com"'
@@ -63,6 +63,7 @@ def prepare_webapp():
 
 def deploy_glasswebapp():
     with cd('jetty-distribution-9.1.3.v20140225'):
+        put('deployables/helloglass.war', 'webapps/helloglass.war')
         # run('dtach -c /tmp/mydtachsocket -z "java -jar start.jar"', pty=False)
         # run('dtach -A /tmp/mydtachsocket -z "java -jar ~/jetty-distribution-9.1.3.v20140225/start.jar"')
         run('dtach -n `mktemp -u /tmp/mydtachsocket.XXXX` java -jar start.jar')
