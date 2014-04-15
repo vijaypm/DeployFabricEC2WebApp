@@ -11,7 +11,7 @@ import os
 logging.getLogger('boto').setLevel(logging.CRITICAL)
 
 #env.hosts = []
-env.user = defaults.EC2_USER_BITNAMI
+env.user = defaults.EC2_USER
 env.key_filename = defaults.KEY_PATH
 env.connection_attempts = 3
 
@@ -56,6 +56,7 @@ def update_noip(noip_user_pass, noip_user_email, noip_hostname):
 
 def prepare_webapp():
     run('sudo apt-get update')
+    # run("echo 'Y' | sudo apt-get dist-upgrade")
     run("echo 'Y' | sudo apt-get install dtach")
     run("echo 'Y' | sudo apt-get install openjdk-7-jre")
     run('wget http://download.eclipse.org/jetty/9.1.3.v20140225/dist/jetty-distribution-9.1.3.v20140225.tar.gz')
@@ -64,6 +65,11 @@ def prepare_webapp():
 def deploy_glasswebapp():
     with cd('jetty-distribution-9.1.3.v20140225'):
         put('deployables/helloglass.war', 'webapps/helloglass.war')
+        put('deployables/log4j.properties', 'resources/log4j.properties')
+        put('deployables/oauth.properties', 'resources/oauth.properties')
+        put('deployables/log4j-1.2.17.jar', 'lib/ext/log4j-1.2.17.jar')
+        put('deployables/slf4j-api-1.6.6.jar', 'lib/ext/slf4j-api-1.6.6.jar')
+        put('deployables/slf4j-log4j12-1.6.6.jar', 'lib/ext/slf4j-log4j12-1.6.6.jar')
         # run('dtach -c /tmp/mydtachsocket -z "java -jar start.jar"', pty=False)
         # run('dtach -A /tmp/mydtachsocket -z "java -jar ~/jetty-distribution-9.1.3.v20140225/start.jar"')
         run('dtach -n `mktemp -u /tmp/mydtachsocket.XXXX` java -jar start.jar')
@@ -86,6 +92,11 @@ def deploy(noip_user_pass=os.getenv("NOIP_USERPASSWORD"), noip_user_email=os.get
     execute(update_noip, noip_user_pass=noip_user_pass, noip_user_email=noip_user_email, noip_hostname= noip_hostname, hosts=[instance.public_dns_name])
     execute(prepare_webapp, hosts=[instance.public_dns_name])
     execute(deploy_glasswebapp, hosts=[instance.public_dns_name])
+
+def launchEC2():
+    instance = LaunchEC2.launch_instance(cmd_shell=False)[0]
+    print('launched instance %s' % instance.public_dns_name)
+
 
 
 def undeploy():

@@ -7,7 +7,7 @@ import boto.ec2
 import defaults
 
 def launch_instance(ec2_region=defaults.EC2_REGION,
-                    ami=defaults.AMI_BITNAMI_DJANGOSTACK_UBUNTU32,
+                    ami=defaults.EC2_AMI,
                     instance_type=defaults.MICRO_INSTANCE,
                     key_name=defaults.KEY_NAME,
                     key_extension=defaults.KEY_EXTENSION,
@@ -18,7 +18,7 @@ def launch_instance(ec2_region=defaults.EC2_REGION,
                     tag=defaults.INSTANCE_TAG,
                     user_data=None,
                     cmd_shell=False,
-                    login_user=defaults.EC2_USER_BITNAMI, # default user on BitNami AMIs, ec2-user is the default on Ubuntu AMIs
+                    login_user=defaults.EC2_USER, # default user on BitNami AMIs, ec2-user is the default on Ubuntu AMIs
                     ssh_passwd=None):
     """
     Launch an instance and wait for it to start running.
