@@ -1,0 +1,14 @@
+Python app to deploy web apps to EC2.
+
+To deploy:
+==========
+
+ fab --show=debug deploy:noip_user_pass=username:password,noip_user_email=address@email.com,noip_hostname=myhostname
+
+
+To undeploy:
+============
+
+ fab undeploy
+
+
