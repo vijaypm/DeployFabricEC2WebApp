@@ -59,11 +59,11 @@ def prepare_webapp():
     # run("echo 'Y' | sudo apt-get dist-upgrade")
     run("echo 'Y' | sudo apt-get install dtach")
     run("echo 'Y' | sudo apt-get install openjdk-7-jre")
-    run('wget http://download.eclipse.org/jetty/9.1.3.v20140225/dist/jetty-distribution-9.1.3.v20140225.tar.gz')
-    run('tar xzvf jetty-distribution-9.1.3.v20140225.tar.gz')
+    run('wget http://download.eclipse.org/jetty/9.1.5.v20140505/dist/jetty-distribution-9.1.5.v20140505.tar.gz')
+    run('tar xzvf jetty-distribution-9.1.5.v20140505.tar.gz')
 
 def deploy_glasswebapp():
-    with cd('jetty-distribution-9.1.3.v20140225'):
+    with cd('jetty-distribution-9.1.5.v20140505'):
         put('deployables/helloglass.war', 'webapps/helloglass.war')
         put('deployables/log4j.properties', 'resources/log4j.properties')
         put('deployables/oauth.properties', 'resources/oauth.properties')
@@ -71,7 +71,7 @@ def deploy_glasswebapp():
         put('deployables/slf4j-api-1.6.6.jar', 'lib/ext/slf4j-api-1.6.6.jar')
         put('deployables/slf4j-log4j12-1.6.6.jar', 'lib/ext/slf4j-log4j12-1.6.6.jar')
         # run('dtach -c /tmp/mydtachsocket -z "java -jar start.jar"', pty=False)
-        # run('dtach -A /tmp/mydtachsocket -z "java -jar ~/jetty-distribution-9.1.3.v20140225/start.jar"')
+        # run('dtach -A /tmp/mydtachsocket -z "java -jar ~/jetty-distribution-9.1.5.v20140505/start.jar"')
         run('dtach -n `mktemp -u /tmp/mydtachsocket.XXXX` java -jar start.jar')
 
 
