@@ -64,8 +64,10 @@ def prepare_webapp():
 
 def deploy_glasswebapp():
     with cd('jetty-distribution-9.1.5.v20140505'):
+        # README - build helloglass.war from https://github.com/vijaypm/helloglass/helloglass
         put('deployables/helloglass.war', 'webapps/helloglass.war')
         put('deployables/log4j.properties', 'resources/log4j.properties')
+        # README - download oauth.properties from your Google Developer console
         put('deployables/oauth.properties', 'resources/oauth.properties')
         put('deployables/log4j-1.2.17.jar', 'lib/ext/log4j-1.2.17.jar')
         put('deployables/slf4j-api-1.6.6.jar', 'lib/ext/slf4j-api-1.6.6.jar')
