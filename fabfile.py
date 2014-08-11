@@ -58,23 +58,24 @@ def prepare_webapp():
     run('sudo apt-get update')
     # run("echo 'Y' | sudo apt-get dist-upgrade")
     run("echo 'Y' | sudo apt-get install dtach")
-    run("echo 'Y' | sudo apt-get install openjdk-7-jre")
-    run('wget http://download.eclipse.org/jetty/9.1.5.v20140505/dist/jetty-distribution-9.1.5.v20140505.tar.gz')
-    run('tar xzvf jetty-distribution-9.1.5.v20140505.tar.gz')
+    run("echo 'Y' | sudo apt-get install docker.io")
+    run("sudo gpasswd -a %s docker" % env.user)
+    run("sudo groupadd docker")
+    run("sudo service docker.io restart")
+    run("sudo ln -s /usr/bin/docker.io /usr/local/bin/docker")
+    #TODO need to logout and log back in
+    run("docker run -P -d vijaypm/glassenv")
 
 def deploy_glasswebapp():
-    with cd('jetty-distribution-9.1.5.v20140505'):
+    run("echo 'Y'")
+    # with cd('jetty-distribution-9.1.5.v20140505'):
         # README - build helloglass.war from https://github.com/vijaypm/helloglass/helloglass
-        put('deployables/helloglass.war', 'webapps/helloglass.war')
-        put('deployables/log4j.properties', 'resources/log4j.properties')
+        # put('deployables/helloglass.war', 'webapps/helloglass.war')
         # README - download oauth.properties from your Google Developer console
-        put('deployables/oauth.properties', 'resources/oauth.properties')
-        put('deployables/log4j-1.2.17.jar', 'lib/ext/log4j-1.2.17.jar')
-        put('deployables/slf4j-api-1.6.6.jar', 'lib/ext/slf4j-api-1.6.6.jar')
-        put('deployables/slf4j-log4j12-1.6.6.jar', 'lib/ext/slf4j-log4j12-1.6.6.jar')
+        # put('deployables/oauth.properties', 'resources/oauth.properties')
         # run('dtach -c /tmp/mydtachsocket -z "java -jar start.jar"', pty=False)
         # run('dtach -A /tmp/mydtachsocket -z "java -jar ~/jetty-distribution-9.1.5.v20140505/start.jar"')
-        run('dtach -n `mktemp -u /tmp/mydtachsocket.XXXX` java -jar start.jar')
+        # run('dtach -n `mktemp -u /tmp/mydtachsocket.XXXX` java -jar start.jar')
 
 
 
@@ -82,7 +83,7 @@ def deploy(noip_user_pass=os.getenv("NOIP_USERPASSWORD"), noip_user_email=os.get
     if noip_user_pass is None or noip_user_email is None or noip_hostname is None :
         raise Exception('Provide a username:password, email and hostname for noip_user_arg, noip_user_email, noip_hostname')
     instance = LaunchEC2.launch_instance(cmd_shell=False)[0]
-    sleeptime = 60
+    sleeptime = 120
     print('sleeping for %d seconds' % sleeptime)
     time.sleep(sleeptime)
 
