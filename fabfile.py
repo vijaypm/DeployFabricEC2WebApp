@@ -1,5 +1,6 @@
 __author__ = 'vijay'
 from fabric.api import env, local, run, execute, cd, put
+from fabric.state import connections
 import LaunchEC2
 import TerminateEC2
 import CleanEC2Security
@@ -54,19 +55,22 @@ def update_noip(noip_user_pass, noip_user_email, noip_hostname):
     #    run('sudo make install')
 
 
-def prepare_webapp():
+def prepare_docker():
     run('sudo apt-get update')
     # run("echo 'Y' | sudo apt-get dist-upgrade")
     run("echo 'Y' | sudo apt-get install dtach")
     run("echo 'Y' | sudo apt-get install docker.io")
     run("sudo gpasswd -a %s docker" % env.user)
-    run("sudo groupadd docker")
     run("sudo service docker.io restart")
     run("sudo ln -s /usr/bin/docker.io /usr/local/bin/docker")
-    #TODO need to logout and log back in
-    run("docker run -P -d vijaypm/glassenv")
+    # need to logout and log back in for gpasswd to take effect 
+    for env.host in connections.keys():
+        connections[env.host].close()
+        del connections[env.host]
 
 def deploy_glasswebapp():
+    run("docker pull vijaypm/glassenv")
+    run("docker run -p 8080:8080 -p 22 -d vijaypm/glassenv")
     run("echo 'Y'")
     # with cd('jetty-distribution-9.1.5.v20140505'):
         # README - build helloglass.war from https://github.com/vijaypm/helloglass/helloglass
@@ -83,7 +87,7 @@ def deploy(noip_user_pass=os.getenv("NOIP_USERPASSWORD"), noip_user_email=os.get
     if noip_user_pass is None or noip_user_email is None or noip_hostname is None :
         raise Exception('Provide a username:password, email and hostname for noip_user_arg, noip_user_email, noip_hostname')
     instance = LaunchEC2.launch_instance(cmd_shell=False)[0]
-    sleeptime = 120
+    sleeptime = 60
     print('sleeping for %d seconds' % sleeptime)
     time.sleep(sleeptime)
 
@@ -93,7 +97,7 @@ def deploy(noip_user_pass=os.getenv("NOIP_USERPASSWORD"), noip_user_email=os.get
 
     print('attempting to connect to %s' % instance.public_dns_name)
     execute(update_noip, noip_user_pass=noip_user_pass, noip_user_email=noip_user_email, noip_hostname= noip_hostname, hosts=[instance.public_dns_name])
-    execute(prepare_webapp, hosts=[instance.public_dns_name])
+    execute(prepare_docker, hosts=[instance.public_dns_name])
     execute(deploy_glasswebapp, hosts=[instance.public_dns_name])
 
 def launchEC2():
